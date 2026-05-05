@@ -5,15 +5,14 @@ const requireRole = require('../middleware/requireRole');
 
 const router = Router();
 
-// Costruisce il filtro MongoDB in base al ruolo dell'utente
+// superuser escluso da queste route — vede solo dati di sistema
 function buildFilter(user) {
-  if (user.role === 'superuser') return {};
   if (user.role === 'studio') return { studioId: user._id };
   return { clienteId: user._id };
 }
 
 // GET /api/fatture?page=1&limit=20&stato=ricevuta&cf=IT...
-router.get('/', auth, requireRole('cliente'), async (req, res) => {
+router.get('/', auth, requireRole('cliente', 'studio'), async (req, res) => {
   try {
     const { page = 1, limit = 20, stato, cf } = req.query;
     const filter = buildFilter(req.user);
@@ -36,7 +35,7 @@ router.get('/', auth, requireRole('cliente'), async (req, res) => {
 });
 
 // GET /api/fatture/:id
-router.get('/:id', auth, requireRole('cliente'), async (req, res) => {
+router.get('/:id', auth, requireRole('cliente', 'studio'), async (req, res) => {
   try {
     const filter = { _id: req.params.id, ...buildFilter(req.user) };
     const fattura = await Fattura.findOne(filter).lean();

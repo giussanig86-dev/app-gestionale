@@ -9,13 +9,10 @@ const router = Router();
 router.get('/', auth, requireRole('studio'), async (req, res) => {
   try {
     const { page = 1, limit = 20, tipo, cf } = req.query;
-    const filter = {};
-    if (req.user.role === 'studio') {
-      // solo notifiche relative alle fatture dei propri clienti
-      const Fattura = require('../models/Fattura');
-      const ids = await Fattura.distinct('_id', { studioId: req.user._id });
-      filter.fatturaId = { $in: ids };
-    }
+    // solo notifiche relative alle fatture dei propri clienti
+    const Fattura = require('../models/Fattura');
+    const ids = await Fattura.distinct('_id', { studioId: req.user._id });
+    const filter = { fatturaId: { $in: ids } };
     if (tipo) filter.tipo = tipo;
     if (cf) filter.cfDelegante = cf;
 

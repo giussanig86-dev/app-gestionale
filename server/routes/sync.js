@@ -16,12 +16,12 @@ router.post('/trigger', auth, requireRole('superuser'), async (req, res) => {
   }
 });
 
-// GET /api/sync/status — ultimo run e contatori
+// GET /api/sync/status — contatori per lo studio (solo i propri clienti)
 router.get('/status', auth, requireRole('studio'), async (req, res) => {
   try {
     const Fattura = require('../models/Fattura');
     const Corrispettivo = require('../models/Corrispettivo');
-    const filter = req.user.role === 'superuser' ? {} : { studioId: req.user._id };
+    const filter = { studioId: req.user._id };
 
     const [fatture, corrispettivi] = await Promise.all([
       Fattura.countDocuments(filter),

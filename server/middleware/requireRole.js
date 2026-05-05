@@ -1,11 +1,10 @@
-const RANK = { cliente: 0, studio: 1, superuser: 2 };
-
-// requireRole('studio') → ammette studio e superuser
+// Whitelist esplicita: solo i ruoli elencati sono ammessi.
+// requireRole('cliente', 'studio') → superuser escluso
+// requireRole('superuser')         → solo superuser
 function requireRole(...roles) {
-  const minRank = Math.min(...roles.map((r) => RANK[r] ?? 0));
+  const allowed = new Set(roles);
   return (req, res, next) => {
-    const userRank = RANK[req.user?.role] ?? -1;
-    if (userRank < minRank) {
+    if (!allowed.has(req.user?.role)) {
       return res.status(403).json({ error: 'Accesso non autorizzato' });
     }
     next();
