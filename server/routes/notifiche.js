@@ -6,12 +6,12 @@ const requireRole = require('../middleware/requireRole');
 const router = Router();
 
 // GET /api/notifiche?tipo=NS&cf=IT...
-router.get('/', auth, requireRole('studio'), async (req, res) => {
+router.get('/', auth, requireRole('consulente'), async (req, res) => {
   try {
     const { page = 1, limit = 20, tipo, cf } = req.query;
     // solo notifiche relative alle fatture dei propri clienti
     const Fattura = require('../models/Fattura');
-    const ids = await Fattura.distinct('_id', { studioId: req.user._id });
+    const ids = await Fattura.distinct('_id', { consulenteId: req.user._id });
     const filter = { fatturaId: { $in: ids } };
     if (tipo) filter.tipo = tipo;
     if (cf) filter.cfDelegante = cf;

@@ -6,7 +6,7 @@ const { eseguiSync } = require('../scheduler/syncJob');
 const router = Router();
 
 // POST /api/sync/trigger — avvia sync manuale (solo superuser)
-router.post('/trigger', auth, requireRole('superuser'), async (req, res) => {
+router.post('/trigger', auth, requireRole('super_admin'), async (req, res) => {
   try {
     res.json({ message: 'Sync avviata in background' });
     // risponde subito, esegue in background
@@ -17,11 +17,11 @@ router.post('/trigger', auth, requireRole('superuser'), async (req, res) => {
 });
 
 // GET /api/sync/status — contatori per lo studio (solo i propri clienti)
-router.get('/status', auth, requireRole('studio'), async (req, res) => {
+router.get('/status', auth, requireRole('consulente'), async (req, res) => {
   try {
     const Fattura = require('../models/Fattura');
     const Corrispettivo = require('../models/Corrispettivo');
-    const filter = { studioId: req.user._id };
+    const filter = { consulenteId: req.user._id };
 
     const [fatture, corrispettivi] = await Promise.all([
       Fattura.countDocuments(filter),

@@ -5,14 +5,14 @@ const requireRole = require('../middleware/requireRole');
 
 const router = Router();
 
-// superuser escluso — vede solo dati di sistema
+// super_admin escluso — vede solo dati di sistema
 function buildFilter(user) {
-  if (user.role === 'studio') return { studioId: user._id };
+  if (user.ruolo === 'consulente') return { consulenteId: user._id };
   return { clienteId: user._id };
 }
 
 // GET /api/corrispettivi?page=1&limit=20&da=2024-01-01&a=2024-12-31
-router.get('/', auth, requireRole('cliente', 'studio'), async (req, res) => {
+router.get('/', auth, requireRole('cliente', 'consulente'), async (req, res) => {
   try {
     const { page = 1, limit = 20, da, a } = req.query;
     const filter = buildFilter(req.user);

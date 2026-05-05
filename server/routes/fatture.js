@@ -5,19 +5,19 @@ const requireRole = require('../middleware/requireRole');
 
 const router = Router();
 
-// superuser escluso da queste route — vede solo dati di sistema
+// superuser (super_admin) escluso — vede solo dati di sistema
 function buildFilter(user) {
-  if (user.role === 'studio') return { studioId: user._id };
+  if (user.ruolo === 'consulente') return { consulenteId: user._id };
   return { clienteId: user._id };
 }
 
 // GET /api/fatture?page=1&limit=20&stato=ricevuta&cf=IT...
-router.get('/', auth, requireRole('cliente', 'studio'), async (req, res) => {
+router.get('/', auth, requireRole('cliente', 'consulente'), async (req, res) => {
   try {
     const { page = 1, limit = 20, stato, cf } = req.query;
     const filter = buildFilter(req.user);
     if (stato) filter.stato = stato;
-    if (cf && req.user.role !== 'cliente') filter.cfDelegante = cf;
+    if (cf && req.user.ruolo === 'consulente') filter.cfDelegante = cf;
 
     const [docs, total] = await Promise.all([
       Fattura.find(filter)
@@ -35,7 +35,7 @@ router.get('/', auth, requireRole('cliente', 'studio'), async (req, res) => {
 });
 
 // GET /api/fatture/:id
-router.get('/:id', auth, requireRole('cliente', 'studio'), async (req, res) => {
+router.get('/:id', auth, requireRole('cliente', 'consulente'), async (req, res) => {
   try {
     const filter = { _id: req.params.id, ...buildFilter(req.user) };
     const fattura = await Fattura.findOne(filter).lean();
@@ -47,7 +47,7 @@ router.get('/:id', auth, requireRole('cliente', 'studio'), async (req, res) => {
 });
 
 // GET /api/fatture/:id/xml — restituisce l'XML grezzo
-router.get('/:id/xml', auth, requireRole('studio'), async (req, res) => {
+router.get('/:id/xml', auth, requireRole('consulente'), async (req, res) => {
   try {
     const filter = { _id: req.params.id, ...buildFilter(req.user) };
     const fattura = await Fattura.findOne(filter, 'xmlRaw idSdi').lean();
@@ -58,8 +58,8 @@ router.get('/:id/xml', auth, requireRole('studio'), async (req, res) => {
   }
 });
 
-// PATCH /api/fatture/:id/corsa — collega una corsa taxi
-router.patch('/:id/corsa', auth, requireRole('studio'), async (req, res) => {
+// PATCH /api/fatture/:id/corsa — collega un corrispettivo taxi
+router.patch('/:id/corsa', auth, requireRole('consulente'), async (req, res) => {
   try {
     const { corsaId } = req.body;
     const filter = { _id: req.params.id, ...buildFilter(req.user) };

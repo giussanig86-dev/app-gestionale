@@ -4,7 +4,7 @@
 function requireRole(...roles) {
   const allowed = new Set(roles);
   return (req, res, next) => {
-    if (!allowed.has(req.user?.role)) {
+    if (!allowed.has(req.user?.ruolo)) {
       return res.status(403).json({ error: 'Accesso non autorizzato' });
     }
     next();

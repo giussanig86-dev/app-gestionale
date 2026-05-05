@@ -16,7 +16,7 @@ async function auth(req, res, next) {
     return res.status(401).json({ error: 'Token non valido o scaduto' });
   }
 
-  const user = await User.findById(payload.id || payload._id || payload.sub).lean();
+  const user = await User.findById(payload.id || payload._id || payload.sub || payload.userId).lean();
   if (!user) return res.status(401).json({ error: 'Utente non trovato' });
 
   req.user = user;

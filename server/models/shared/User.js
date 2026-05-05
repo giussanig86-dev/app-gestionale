@@ -1,20 +1,23 @@
 const mongoose = require('mongoose');
 const { USERS_COLLECTION } = require('../../config/env');
 
-// Thin model: legge la collection utenti della taxi app senza alterarla.
-// I campi minimi necessari per auth + RBAC. Se la taxi app usa nomi diversi,
-// aggiornare qui o usare la variabile MONGO_USERS_COLLECTION.
 const schema = new mongoose.Schema(
   {
     email: String,
-    role: { type: String, enum: ['cliente', 'studio', 'superuser'] },
+    ruolo: { type: String, enum: ['cliente', 'consulente', 'super_admin'] },
     nome: String,
     cognome: String,
     codiceFiscale: String,
-    studioId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    // ObjectId del consulente a cui è associato il cliente
+    consulenteId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
     licenzaId: mongoose.Schema.Types.ObjectId,
   },
   { collection: USERS_COLLECTION, strict: false }
 );
+
+// replica del metodo già presente nella taxi app (User.js riga 333)
+schema.statics.trovaClientiConsulente = function (consulenteId) {
+  return this.find({ ruolo: 'cliente', consulenteId }).lean();
+};
 
 module.exports = mongoose.model('User', schema);
