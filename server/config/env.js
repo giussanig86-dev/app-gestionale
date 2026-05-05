@@ -17,4 +17,10 @@ module.exports = {
   FATTURE_CERT_PASSWORD: process.env.FATTURE_CERT_PASSWORD,
 
   SYNC_CRON: process.env.SYNC_CRON || '0 * * * *',
+
+  // A-Cube API (invio fatture attive e corrispettivi verso SDI)
+  ACUBE_BASE_URL: process.env.ACUBE_BASE_URL,
+  ACUBE_EMAIL: process.env.ACUBE_EMAIL,
+  ACUBE_PASSWORD: process.env.ACUBE_PASSWORD,
+  ACUBE_WEBHOOK_SECRET: process.env.ACUBE_WEBHOOK_SECRET,
 };
