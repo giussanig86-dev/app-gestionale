@@ -7,6 +7,7 @@ app.use('/api/fatture', require('./routes/fatture'));
 app.use('/api/corrispettivi', require('./routes/corrispettivi'));
 app.use('/api/notifiche', require('./routes/notifiche'));
 app.use('/api/sync', require('./routes/sync'));
+app.use('/api/cert', require('./routes/cert'));
 
 app.get('/health', (_, res) => res.json({ status: 'ok' }));
 
